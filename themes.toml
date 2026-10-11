@@ -1,0 +1,149 @@
+# Temaer for ispy.py.
+# Ikon-referanser: "pakke:navn" – pakke = tabler | lucide | phosphor | builtin | custom
+# Samme motiv fra ulike pakker regnes som ulike ikoner (ulik tegnestil), akkurat som
+# de ulike eggmønstrene i originalen. Trenger minst ~28 ikoner per tema.
+
+[defaults]
+title = "JEG SER"
+
+[themes.paaske]
+subtitle = "Påske"
+icons = [
+  "builtin:egg-plain", "builtin:egg-stripes", "builtin:egg-dots", "builtin:egg-zigzag",
+  "builtin:egg-wave", "builtin:egg-spots", "builtin:egg-diagonal", "builtin:egg-bands",
+  "tabler:egg-cracked", "phosphor:egg-crack", "tabler:eggs",
+  "lucide:rabbit", "phosphor:rabbit", "lucide:bird", "phosphor:bird", "tabler:feather",
+  "tabler:flower", "lucide:flower", "phosphor:flower", "phosphor:flower-tulip",
+  "tabler:carrot", "lucide:carrot", "phosphor:carrot",
+  "tabler:butterfly", "phosphor:butterfly", "tabler:basket", "phosphor:basket",
+  "tabler:sun", "lucide:cloud-sun", "tabler:clover", "lucide:sprout", "tabler:seedling",
+  "tabler:candle", "tabler:bug", "lucide:bug", "tabler:rainbow",
+]
+
+[themes.halloween]
+subtitle = "Halloween"
+icons = [
+  "tabler:ghost", "tabler:ghost-2", "tabler:ghost-3", "lucide:ghost", "phosphor:ghost",
+  "tabler:pumpkin-scary", "tabler:spider", "tabler:bat",
+  "tabler:skull", "lucide:skull", "phosphor:skull",
+  "tabler:moon", "tabler:moon-stars", "phosphor:moon-stars",
+  "tabler:candy", "lucide:candy", "tabler:cat", "lucide:cat", "phosphor:cat",
+  "tabler:candle", "lucide:cooking-pot", "phosphor:cooking-pot", "lucide:broom", "phosphor:broom",
+  "tabler:leaf-maple", "tabler:mushroom", "tabler:bone", "lucide:bone", "phosphor:bone",
+  "tabler:flame", "lucide:flame", "tabler:star", "tabler:wand", "lucide:wand", "tabler:bug", "tabler:cookie",
+]
+
+[themes.jul]
+subtitle = "Jul"
+icons = [
+  "tabler:christmas-tree", "tabler:christmas-ball", "tabler:sleigh", "tabler:snowman",
+  "tabler:snowflake", "lucide:snowflake", "phosphor:snowflake",
+  "tabler:gift", "lucide:gift", "phosphor:gift",
+  "tabler:bell", "lucide:bell", "phosphor:bell", "tabler:bell-ringing", "phosphor:bell-ringing",
+  "tabler:star", "lucide:star", "phosphor:star",
+  "tabler:cookie", "lucide:cookie", "phosphor:cookie", "lucide:candy-cane",
+  "tabler:candle", "tabler:heart", "tabler:mug", "tabler:ice-skating", "tabler:snowboarding",
+  "phosphor:tree-evergreen", "lucide:tree-pine", "phosphor:beanie", "lucide:sparkles",
+  "tabler:cloud-snow", "phosphor:cloud-snow", "tabler:mountain", "tabler:flame",
+]
+
+[themes.sommer]
+subtitle = "Sommer"
+icons = [
+  "tabler:sun", "lucide:sun", "phosphor:sun", "tabler:sunglasses", "phosphor:sunglasses",
+  "tabler:ice-cream", "lucide:ice-cream-cone", "tabler:ice-cream-2", "phosphor:ice-cream",
+  "tabler:beach", "tabler:sailboat", "lucide:sailboat", "phosphor:sailboat", "phosphor:boat",
+  "tabler:fish", "lucide:fish", "phosphor:fish", "lucide:shell",
+  "lucide:tree-palm", "phosphor:tree-palm", "phosphor:swimming-pool", "phosphor:drop",
+  "phosphor:orange", "tabler:cherry", "tabler:lemon", "lucide:cloud-sun",
+  "tabler:umbrella", "lucide:umbrella", "phosphor:umbrella", "tabler:tent", "tabler:campfire",
+  "tabler:bike", "tabler:flower", "tabler:butterfly", "tabler:anchor", "lucide:lighthouse",
+]
+
+[themes.host]
+subtitle = "Høst"
+icons = [
+  "tabler:leaf", "lucide:leaf", "phosphor:leaf", "tabler:leaf-maple", "tabler:leaf-2",
+  "tabler:acorn", "phosphor:acorn", "tabler:mushroom", "tabler:apple", "lucide:apple",
+  "tabler:cloud-rain", "lucide:cloud-rain", "phosphor:cloud-rain",
+  "tabler:umbrella", "lucide:umbrella", "phosphor:umbrella",
+  "tabler:wind", "lucide:wind", "phosphor:wind",
+  "tabler:tree", "phosphor:tree", "tabler:trees", "tabler:wheat", "lucide:wheat",
+  "tabler:grape", "tabler:cherry", "tabler:tractor", "lucide:tractor",
+  "tabler:tent", "tabler:campfire", "tabler:flame", "lucide:bird", "phosphor:bird",
+  "lucide:squirrel", "tabler:feather", "tabler:bug",
+]
+
+[themes.vinter]
+subtitle = "Vinter"
+icons = [
+  "tabler:snowflake", "lucide:snowflake", "phosphor:snowflake", "tabler:snowman",
+  "tabler:cloud-snow", "phosphor:cloud-snow", "phosphor:beanie",
+  "tabler:ice-skating", "tabler:snowboarding", "tabler:mountain", "lucide:mountain", "phosphor:mountains",
+  "lucide:tree-pine", "phosphor:tree-evergreen", "tabler:mug", "tabler:sleigh",
+  "tabler:flame", "lucide:flame", "phosphor:flame", "tabler:campfire", "phosphor:campfire",
+  "tabler:moon", "lucide:moon", "phosphor:moon", "tabler:star", "lucide:star",
+  "tabler:wind", "lucide:wind", "phosphor:wind", "tabler:iceberg",
+  "lucide:bird", "phosphor:bird", "lucide:squirrel", "lucide:panda", "tabler:heart", "tabler:tent",
+]
+
+[themes.var]
+subtitle = "Vår"
+icons = [
+  "tabler:flower", "lucide:flower", "phosphor:flower", "phosphor:flower-tulip", "phosphor:flower-lotus",
+  "tabler:butterfly", "phosphor:butterfly", "tabler:bug", "lucide:bug",
+  "lucide:bird", "phosphor:bird", "lucide:sprout", "tabler:seedling",
+  "tabler:clover", "lucide:clover", "phosphor:clover",
+  "tabler:sun", "lucide:sun", "phosphor:sun", "tabler:cloud-rain", "lucide:cloud-rain",
+  "tabler:umbrella", "lucide:umbrella", "tabler:rainbow", "lucide:rainbow", "phosphor:rainbow",
+  "tabler:carrot", "tabler:leaf", "lucide:leaf", "lucide:cloud-sun",
+  "lucide:rabbit", "phosphor:rabbit", "tabler:bike", "lucide:bike", "tabler:feather",
+]
+
+[themes.valentine]
+subtitle = "Kjærlighet"
+icons = [
+  "tabler:heart", "lucide:heart", "phosphor:heart", "tabler:hearts", "tabler:heart-broken",
+  "phosphor:heart-break", "phosphor:heart-straight", "phosphor:heart-half", "tabler:heartbeat",
+  "lucide:hand-heart", "phosphor:hand-heart",
+  "tabler:gift", "lucide:gift", "phosphor:gift", "tabler:cake", "lucide:cake", "phosphor:cake",
+  "tabler:balloon", "lucide:balloon", "phosphor:balloon", "tabler:confetti", "phosphor:confetti",
+  "tabler:flower", "lucide:flower", "phosphor:flower", "tabler:candle", "tabler:cookie",
+  "lucide:ice-cream-cone", "tabler:star", "lucide:sparkles", "lucide:bird", "tabler:cat", "tabler:butterfly",
+]
+
+[themes.bursdag]
+subtitle = "Bursdag"
+icons = [
+  "tabler:cake", "lucide:cake", "phosphor:cake", "tabler:balloon", "lucide:balloon", "phosphor:balloon",
+  "tabler:gift", "lucide:gift", "phosphor:gift", "tabler:confetti", "phosphor:confetti",
+  "lucide:party-popper", "tabler:candle", "tabler:cookie", "lucide:cookie", "phosphor:cookie",
+  "tabler:ice-cream", "lucide:ice-cream-cone", "lucide:cupcake", "lucide:popcorn", "phosphor:popcorn",
+  "tabler:pizza", "lucide:pizza", "phosphor:pizza", "lucide:hamburger", "phosphor:hamburger",
+  "tabler:candy", "lucide:candy", "tabler:star", "lucide:sparkles", "tabler:crown", "tabler:music",
+  "tabler:wand", "tabler:bell", "tabler:rocket", "tabler:heart",
+]
+
+[themes.dyr]
+subtitle = "Dyr"
+icons = [
+  "tabler:cat", "lucide:cat", "phosphor:cat", "tabler:dog", "lucide:dog", "phosphor:dog",
+  "tabler:fish", "lucide:fish", "phosphor:fish", "lucide:bird", "phosphor:bird",
+  "lucide:rabbit", "phosphor:rabbit", "phosphor:cow", "tabler:horse", "phosphor:horse",
+  "tabler:pig", "lucide:turtle", "lucide:squirrel", "lucide:panda", "tabler:paw",
+  "lucide:paw-print", "phosphor:paw-print", "tabler:bone", "lucide:bone", "phosphor:bone",
+  "tabler:butterfly", "phosphor:butterfly", "tabler:bug", "lucide:bug", "tabler:feather",
+  "lucide:rat", "tabler:spider", "tabler:bat", "tabler:egg",
+]
+
+[themes.rom]
+subtitle = "Verdensrommet"
+icons = [
+  "tabler:rocket", "lucide:rocket", "phosphor:rocket", "phosphor:rocket-launch",
+  "tabler:planet", "phosphor:planet", "tabler:alien", "phosphor:alien", "tabler:ufo",
+  "tabler:satellite", "lucide:satellite", "lucide:satellite-dish", "tabler:telescope", "lucide:telescope",
+  "tabler:star", "lucide:star", "phosphor:star", "tabler:stars", "phosphor:star-four",
+  "tabler:moon", "lucide:moon", "phosphor:moon", "tabler:moon-stars", "phosphor:moon-stars",
+  "tabler:sun", "lucide:sun", "phosphor:sun", "tabler:sparkles", "lucide:sparkles", "phosphor:sparkle",
+  "tabler:atom", "lucide:orbit", "tabler:meteor", "tabler:radar",
+]
