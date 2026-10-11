@@ -1,7 +1,7 @@
 #!/usr/bin/env -S uv run --script
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["cairosvg>=2.7"]
+# dependencies = ["pymupdf>=1.24"]
 # ///
 """
 ispy.py – generator for "Jeg ser"-fargeleggingsoppgaver (I Spy / finn-og-tell).
@@ -59,31 +59,136 @@ PALETTE = ["#e6194b", "#3cb44b", "#4363d8", "#f58231", "#911eb4", "#008080",
 # Innebygde ikoner (egg med mønstre – lager variasjon som i originalen)
 # --------------------------------------------------------------------------
 EGG = "M12 2.8c-4.2 0-6.6 6.6-6.6 11a6.6 6.6 0 0 0 13.2 0c0-4.4-2.4-11-6.6-11z"
-DEFS_COMMON = f'<clipPath id="eggclip"><path d="{EGG}"/></clipPath>'
 
 
-def _egg(extra: str) -> str:
-    return f'<path d="{EGG}"/><g clip-path="url(#eggclip)" stroke-width="1.1">{extra}</g>'
+def _egg_polygon(inset: float = 0.86, n: int = 40) -> list[tuple[float, float]]:
+    """Konveks polygon som følger eggskallet (innskrudd mot midten).
+    Mønstre klippes mot denne i Python, så SVG-en slipper clip-path
+    (som ikke alle renderere støtter)."""
+    def bez(p0, c1, c2, p3, t):
+        u = 1 - t
+        return (u**3 * p0[0] + 3 * u * u * t * c1[0] + 3 * u * t * t * c2[0] + t**3 * p3[0],
+                u**3 * p0[1] + 3 * u * u * t * c1[1] + 3 * u * t * t * c2[1] + t**3 * p3[1])
+    top, left, right = (12.0, 2.8), None, None
+    left = [bez(top, (7.8, 2.8), (5.4, 9.4), (5.4, 13.8), i / n) for i in range(n + 1)]
+    arc = [(12 + 6.6 * math.cos(math.pi - math.pi * i / n), 13.8 + 6.6 * math.sin(math.pi * i / n))
+           for i in range(1, n)]
+    rgt = [bez(top, (16.2, 2.8), (18.6, 9.4), (18.6, 13.8), i / n) for i in range(n + 1)]
+    poly = left + arc + rgt[::-1][:-1]            # mot klokka i skjermkoordinater
+    cx, cy = 12.0, 10.5
+    return [(cx + (x - cx) * inset, cy + (y - cy) * inset) for x, y in poly]
 
 
-def _zigzag(y: float) -> str:
-    pts = "".join(("l2 2 " if i % 2 == 0 else "l2-2 ") for i in range(10))
-    return f'<path d="M3 {y}{pts}"/>'
+_EGG_POLY = None
+
+
+def _clip_seg(p, q):
+    """Cyrus–Beck: klipper segment p→q mot den konvekse egg-polygonen."""
+    global _EGG_POLY
+    if _EGG_POLY is None:
+        _EGG_POLY = _egg_polygon()
+    poly = _EGG_POLY
+    # sørg for konsistent orientering
+    area = sum(poly[i][0] * poly[(i + 1) % len(poly)][1] - poly[(i + 1) % len(poly)][0] * poly[i][1]
+               for i in range(len(poly)))
+    sgn = 1 if area > 0 else -1
+    t0, t1 = 0.0, 1.0
+    dx, dy = q[0] - p[0], q[1] - p[1]
+    for i in range(len(poly)):
+        a, b = poly[i], poly[(i + 1) % len(poly)]
+        ex, ey = b[0] - a[0], b[1] - a[1]
+        nx, ny = -ey * sgn, ex * sgn          # innoverrettet normal
+        num = (p[0] - a[0]) * nx + (p[1] - a[1]) * ny
+        den = dx * nx + dy * ny
+        if abs(den) < 1e-12:
+            if num < 0:
+                return None
+            continue
+        t = -num / den
+        if den > 0:
+            t0 = max(t0, t)
+        else:
+            t1 = min(t1, t)
+        if t0 > t1:
+            return None
+    return (p[0] + t0 * dx, p[1] + t0 * dy), (p[0] + t1 * dx, p[1] + t1 * dy)
+
+
+def _clipped(polylines, step: float = 0.5) -> str:
+    """Tar polylinjer (lister av punkter), deler dem opp og klipper mot egget."""
+    d = []
+    for pl in polylines:
+        pts = []
+        for (x0, y0), (x1, y1) in zip(pl, pl[1:]):
+            k = max(1, int(math.hypot(x1 - x0, y1 - y0) / step))
+            pts += [(x0 + (x1 - x0) * i / k, y0 + (y1 - y0) * i / k) for i in range(k)]
+        pts.append(pl[-1])
+        run = []
+        for a, b in zip(pts, pts[1:]):
+            seg = _clip_seg(a, b)
+            if seg is None:
+                if len(run) > 1:
+                    d.append("M" + "L".join(f"{x:.2f} {y:.2f}" for x, y in run))
+                run = []
+                continue
+            if not run:
+                run = [seg[0]]
+            run.append(seg[1])
+            if seg[1] != b:                      # forlot egget
+                d.append("M" + "L".join(f"{x:.2f} {y:.2f}" for x, y in run))
+                run = []
+        if len(run) > 1:
+            d.append("M" + "L".join(f"{x:.2f} {y:.2f}" for x, y in run))
+    return f'<path stroke-width="1.1" d="{"".join(d)}"/>'
+
+
+def _hlines(ys):
+    return [[(0, y), (24, y)] for y in ys]
+
+
+def _wave(y, amp=1.1, period=3.0):
+    pts, x = [], 0.0
+    while x <= 24:
+        pts.append((x, y + amp * math.sin(2 * math.pi * x / period)))
+        x += 0.4
+    return pts
+
+
+def _zig(y, amp=1.1, period=3.0):
+    pts, x, up = [], 0.0, True
+    while x <= 24 + period:
+        pts.append((x, y + (-amp if up else amp)))
+        x += period / 2
+        up = not up
+    return pts
+
+
+def _dots(rows):
+    out = []
+    for r, y in enumerate(rows):
+        for i in range(6):
+            x = 6 + 3.0 * i + (1.5 if r % 2 else 0)
+            if _clip_seg((x, y), (x + 0.01, y)) is not None:
+                out.append(f'<circle cx="{x:.1f}" cy="{y}" r=".55" fill="#000" stroke="none"/>')
+    return "".join(out)
+
+
+def _outline(extra: str = "") -> str:
+    return f'<path d="{EGG}"/>{extra}'
 
 
 BUILTIN = {
-    "egg-plain": lambda: f'<path d="{EGG}"/><path d="M8.6 15a3.6 3.6 0 0 0 2.2 3.1"/>',
-    "egg-stripes": lambda: _egg("".join(f'<path d="M3 {y}h18"/>' for y in (7.5, 10.5, 13.5, 16.5, 19.5))),
-    "egg-dots": lambda: _egg("".join(
-        f'<circle cx="{x}" cy="{y}" r=".6" fill="#000" stroke="none"/>'
-        for r, y in enumerate((7, 10.5, 14, 17.5)) for x in
-        [8 + 3.5 * i + (1.75 if r % 2 else 0) for i in range(4)])),
-    "egg-zigzag": lambda: _egg(_zigzag(10) + _zigzag(15.5)),
-    "egg-wave": lambda: _egg('<path d="M3 11q1.5-2 3 0t3 0 3 0 3 0 3 0 3 0"/><path d="M3 16q1.5-2 3 0t3 0 3 0 3 0 3 0 3 0"/>'),
-    "egg-spots": lambda: _egg('<circle cx="10" cy="9" r="1.2"/><circle cx="14.5" cy="12" r="1.5"/>'
-                              '<circle cx="9.5" cy="15" r="1.4"/><circle cx="14" cy="18" r="1.1"/>'),
-    "egg-diagonal": lambda: _egg('<path d="M2 14L14 2M2 20L20 2M6 22L22 6M12 24L24 12"/>'),
-    "egg-bands": lambda: _egg('<path d="M3 9.5h18M3 15.5h18"/><path d="M3 12.5h18" stroke-dasharray="1 1.6"/>'),
+    "egg-plain": lambda: _outline('<path d="M8.6 15a3.6 3.6 0 0 0 2.2 3.1"/>'),
+    "egg-stripes": lambda: _outline(_clipped(_hlines([7.5, 10.5, 13.5, 16.5, 19.5]))),
+    "egg-dots": lambda: _outline(_dots([7.5, 10.5, 13.5, 16.5, 19.0])),
+    "egg-zigzag": lambda: _outline(_clipped([_zig(10.5), _zig(16.0)])),
+    "egg-wave": lambda: _outline(_clipped([_wave(10.5), _wave(16.0)])),
+    "egg-spots": lambda: _outline(
+        '<circle cx="10.5" cy="9.5" r="1"/><circle cx="14" cy="12" r="1.2"/>'
+        '<circle cx="10" cy="15" r="1.2"/><circle cx="14" cy="17.2" r=".9"/>'),
+    "egg-diagonal": lambda: _outline(_clipped([[(0, 14 + k * 5), (14 + k * 5, 0)] for k in range(-1, 5)])),
+    "egg-bands": lambda: _outline(_clipped(_hlines([9.5, 15.5])) + _clipped([[(0, 12.5), (24, 12.5)]]).replace(
+        'stroke-width="1.1"', 'stroke-width="1.1" stroke-dasharray="1 1.6"')),
 }
 
 
@@ -250,7 +355,7 @@ def render_svg(scene: Scene, title: str, subtitle: str, solution: bool = False) 
     s = scene
     used = list(dict.fromkeys([r for r, _ in s.legend] + [c.ref for c in s.cells]))
     ids = {ref: f"i{n}" for n, ref in enumerate(used)}
-    defs = DEFS_COMMON + "".join(icon_group(ref, ids[ref]) for ref in used)
+    defs = "".join(icon_group(ref, ids[ref]) for ref in used)
 
     def use(ref, x, y, size, rot=0.0, flip=False):
         sc = size / 24.0
@@ -329,15 +434,15 @@ def write_outputs(svg: str, base: Path, formats: set[str], paper: str) -> list[P
         p.write_text(svg, encoding="utf-8")
         written.append(p)
     if formats & {"pdf", "png"}:
-        import cairosvg
+        import pymupdf  # ingen native systembiblioteker nødvendig
+        doc = pymupdf.open(stream=svg.encode("utf-8"), filetype="svg")
         if "pdf" in formats:
             p = base.with_suffix(".pdf")
-            cairosvg.svg2pdf(bytestring=svg.encode(), write_to=str(p))
+            p.write_bytes(doc.convert_to_pdf())
             written.append(p)
         if "png" in formats:
             p = base.with_suffix(".png")
-            px = int(PAPERS[paper][0] / 25.4 * 200)  # 200 dpi
-            cairosvg.svg2png(bytestring=svg.encode(), write_to=str(p), output_width=px)
+            doc[0].get_pixmap(dpi=200).save(str(p))
             written.append(p)
     return written
 
